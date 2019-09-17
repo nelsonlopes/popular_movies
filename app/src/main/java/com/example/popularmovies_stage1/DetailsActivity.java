@@ -3,7 +3,7 @@ package com.example.popularmovies_stage1;
 import android.content.Intent;
 import android.example.popularmovies_stage1.R;
 
-import com.example.popularmovies_stage1.Database.MovieDatabase;
+import com.example.popularmovies_stage1.Database.AppDatabase;
 import com.example.popularmovies_stage1.model.Movie;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -33,7 +33,7 @@ public class DetailsActivity extends AppCompatActivity { ;
 
     private Movie movie;
 
-    public MovieDatabase mDb;
+    public AppDatabase mDb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +43,7 @@ public class DetailsActivity extends AppCompatActivity { ;
         // bind the view using butterknife
         ButterKnife.bind(this);
 
-        mDb = MovieDatabase.getInstance(getApplicationContext());
+        mDb = AppDatabase.getInstance(getApplicationContext());
 
         Intent intent = getIntent();
         if (intent == null) {
@@ -71,23 +71,47 @@ public class DetailsActivity extends AppCompatActivity { ;
     }
 
     public void isFavorite() {
-        if (mDb.movieDao().getMovieById(movie.getId()) != null) {
-            btnFavorite.setBackgroundResource(R.drawable.ic_favorite_24px);
-        } else {
-            btnFavorite.setBackgroundResource(R.drawable.ic_favorite_border_24px);
-        }
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                if (mDb.movieDao().getMovieById(movie.getId()) != null) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            btnFavorite.setBackgroundResource(R.drawable.ic_favorite_24px);
+                        }
+                    });
+                } else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            btnFavorite.setBackgroundResource(R.drawable.ic_favorite_border_24px);
+                        }
+                    });
+                }
+            }
+        });
     }
 
     @OnClick(R.id.btnFavorite)
     public void setFavorite(View view) {
-        if (mDb.movieDao().getMovieById(movie.getId()) != null) {
-            mDb.movieDao().deleteMovie(movie);
-            Toast.makeText(this, "No longer a favorite!", Toast.LENGTH_SHORT).show();
-        } else {
-            mDb.movieDao().insertMovie(movie);
-            Toast.makeText(this, "Added as favorite!", Toast.LENGTH_SHORT).show();
-        }
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                /**
+                 * Should this logic be inside the Runnable, or outside with one Runnable inside
+                 * if condition is met (for the deletion), and another Runnable if it is'nt
+                 * (for the insert)?
+                 */
+                if (mDb.movieDao().getMovieById(movie.getId()) != null) {
+                    mDb.movieDao().deleteMovie(movie);
+                    //Toast.makeText(getApplicationContext(), "No longer a favorite!", Toast.LENGTH_SHORT).show();
+                } else {
+                    mDb.movieDao().insertMovie(movie);
+                    //Toast.makeText(getApplicationContext(), "Added as favorite!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
         isFavorite();
-
     }
 }
