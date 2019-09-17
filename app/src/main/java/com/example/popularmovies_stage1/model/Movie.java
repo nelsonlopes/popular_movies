@@ -1,16 +1,28 @@
 package com.example.popularmovies_stage1.model;
 
 import com.example.popularmovies_stage1.utils.NetworkUtils;
+
+import android.arch.persistence.room.ColumnInfo;
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
+import android.arch.persistence.room.PrimaryKey;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+@Entity(tableName = "movies")
 public class Movie implements Parcelable {
+    @PrimaryKey
     private int id;
+    @ColumnInfo(name = "original_title")
     private String originalTitle;
     private String overview;
+    @ColumnInfo(name = "vote_average")
     private Double voteAverage;
+    @ColumnInfo(name = "release_date")
     private String releaseDate;
+    @ColumnInfo(name = "poster_path")
     private String posterPath;
+    @ColumnInfo(name = "backdrop_path")
     private String backdropPath;
 
     public Movie() {
@@ -27,6 +39,7 @@ public class Movie implements Parcelable {
         this.backdropPath = backdropPath;
     }
 
+    @Ignore
     private Movie(Parcel in) {
         id = in.readInt();
         originalTitle = in.readString();

@@ -18,6 +18,12 @@
             android:contentDescription="@string/backdrop_content_description"
             android:scaleType="centerCrop" />
 
+        <!-- Favorite -->
+        <Button
+            android:id="@+id/btnFavorite"
+            android:layout_width="24dp"
+            android:layout_height="24dp" />
+
         <!-- Release Date -->
         <TextView
             android:id="@+id/release_date_title_tv"

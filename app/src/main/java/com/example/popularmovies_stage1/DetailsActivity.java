@@ -3,9 +3,12 @@ package com.example.popularmovies_stage1;
 import android.content.Intent;
 import android.example.popularmovies_stage1.R;
 
+import com.example.popularmovies_stage1.Database.MovieDatabase;
 import com.example.popularmovies_stage1.model.Movie;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -14,19 +17,23 @@ import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class DetailsActivity extends AppCompatActivity { ;
     @BindView(R.id.vote_average_tv)
     TextView voteAverageTv;
-
     @BindView(R.id.release_date_tv)
     TextView releaseDateTv;
-
     @BindView(R.id.overview_tv)
     TextView overviewTv;
-
     @BindView(R.id.backdrop_path_iv)
     ImageView backdropPathIv;
+    @BindView(R.id.btnFavorite)
+    Button btnFavorite;
+
+    private Movie movie;
+
+    public MovieDatabase mDb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,14 +43,17 @@ public class DetailsActivity extends AppCompatActivity { ;
         // bind the view using butterknife
         ButterKnife.bind(this);
 
+        mDb = MovieDatabase.getInstance(getApplicationContext());
+
         Intent intent = getIntent();
         if (intent == null) {
             closeOnError();
         }
 
-        Movie movie = intent.getParcelableExtra(getString(R.string.parcel_movie));
+        movie = intent.getParcelableExtra(getString(R.string.parcel_movie));
 
         setTitle(movie.getOriginalTitle());
+        isFavorite();
         voteAverageTv.setText(movie.getVoteAverage() + "/10");
         releaseDateTv.setText(movie.getReleaseDate());
         overviewTv.setText(movie.getOverview());
@@ -51,10 +61,33 @@ public class DetailsActivity extends AppCompatActivity { ;
                 .load(movie.getBackdropPath())
                 .placeholder(R.drawable.round_local_movies_black_24dp)
                 .into(backdropPathIv);
+
+
     }
 
     private void closeOnError() {
         finish();
         Toast.makeText(this, R.string.error_message, Toast.LENGTH_SHORT).show();
+    }
+
+    public void isFavorite() {
+        if (mDb.movieDao().getMovieById(movie.getId()) != null) {
+            btnFavorite.setBackgroundResource(R.drawable.ic_favorite_24px);
+        } else {
+            btnFavorite.setBackgroundResource(R.drawable.ic_favorite_border_24px);
+        }
+    }
+
+    @OnClick(R.id.btnFavorite)
+    public void setFavorite(View view) {
+        if (mDb.movieDao().getMovieById(movie.getId()) != null) {
+            mDb.movieDao().deleteMovie(movie);
+            Toast.makeText(this, "No longer a favorite!", Toast.LENGTH_SHORT).show();
+        } else {
+            mDb.movieDao().insertMovie(movie);
+            Toast.makeText(this, "Added as favorite!", Toast.LENGTH_SHORT).show();
+        }
+        isFavorite();
+
     }
 }
