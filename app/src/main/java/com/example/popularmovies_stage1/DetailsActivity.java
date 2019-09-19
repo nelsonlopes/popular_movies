@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.popularmovies_stage1.utils.NetworkUtils;
 import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
@@ -35,12 +36,16 @@ public class DetailsActivity extends AppCompatActivity { ;
 
     public AppDatabase mDb;
 
+    // TODO na lista de favoritos, pode não ter nada. Colocar pelo menos uma mensagem indicativa disso mesmo
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
 
-        // bind the view using butterknife
+        /**
+         * Bind the view using Butter Knife
+          */
         ButterKnife.bind(this);
 
         mDb = AppDatabase.getInstance(getApplicationContext());
@@ -58,7 +63,7 @@ public class DetailsActivity extends AppCompatActivity { ;
         releaseDateTv.setText(movie.getReleaseDate());
         overviewTv.setText(movie.getOverview());
         Picasso.get()
-                .load(movie.getBackdropPath())
+                .load(NetworkUtils.TMDB_POSTER_BASE_URL + movie.getBackdropPath())
                 .placeholder(R.drawable.round_local_movies_black_24dp)
                 .into(backdropPathIv);
 

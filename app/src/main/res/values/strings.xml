@@ -5,12 +5,14 @@
     <!-- Menu options -->
     <string name="sort_pop_desc">Sort by Popularity</string>
     <string name="sort_vote_count_desc">Sort by Top Rated</string>
+    <string name="sort_favorites">Sort by Favorites</string>
     <!-- Shared Preferences -->
     <string name="pref_sort_method_key">SORT_METHOD</string>
     <!--<string name="tmdb_sort_pop_desc">popularity.desc</string>
     <string name="tmdb_sorte_vote_count_desc">vote_count.desc</string>-->
     <string name="tmdb_sort_popular">popular</string>
     <string name="tmdb_sort_top_rated">top_rated</string>
+    <string name="tmdb_sort_favorites">favorites</string>
 
     <!-- Passing the Movie in the Intent -->
     <string name="parcel_movie">PARCEL_MOVIE</string>

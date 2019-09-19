@@ -81,13 +81,15 @@ public class Movie implements Parcelable {
     public void setReleaseDate(String releaseDate) { this.releaseDate = releaseDate; }
 
     public String getPosterPath() {
-        return NetworkUtils.TMDB_POSTER_BASE_URL + posterPath;
+        //return NetworkUtils.TMDB_POSTER_BASE_URL + posterPath;
+        return posterPath;
     }
 
     public void setPosterPath(String posterPath) { this.posterPath = posterPath; }
 
     public String getBackdropPath() {
-        return NetworkUtils.TMDB_POSTER_BASE_URL + backdropPath;
+        //return NetworkUtils.TMDB_POSTER_BASE_URL + backdropPath;
+        return backdropPath;
     }
 
     public void setBackdropPath(String backdropPath) { this.backdropPath = backdropPath; }

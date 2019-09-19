@@ -1,9 +1,12 @@
 package com.example.popularmovies_stage1;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.example.popularmovies_stage1.R;
 
+import com.example.popularmovies_stage1.Database.AppDatabase;
 import com.example.popularmovies_stage1.model.Movie;
 import com.example.popularmovies_stage1.utils.JsonUtils;
 import com.example.popularmovies_stage1.utils.NetworkUtils;
@@ -12,6 +15,7 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -26,26 +30,31 @@ import android.widget.Toast;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String LOG_TAG = AppDatabase.class.getSimpleName();
+
     @BindView(R.id.rv_movies)
     RecyclerView recyclerView;
-
     // Create a variable to store a reference to the error message TextView
     @BindView(R.id.tv_error_message_display)
     TextView mErrorMessageDisplay;
-
     // Create a ProgressBar variable to store a reference to the ProgressBar
     @BindView(R.id.pb_loading_indicator)
     ProgressBar mLoadingIndicator;
 
-    private Movie[] movies = null;
+    //private Movie[] movies = null;
+    private List<Movie> movies = null;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
+
+    public AppDatabase mDb; // TODO todo o programa devia usar esta variável publica, em vez de ter nos details também
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +63,8 @@ public class MainActivity extends AppCompatActivity {
 
         // bind the view using butterknife
         ButterKnife.bind(this);
+
+        mDb = AppDatabase.getInstance(getApplicationContext());
 
         /**
          * If something goes wrong (like there is no internet connection), the usar taps the
@@ -89,9 +100,11 @@ public class MainActivity extends AppCompatActivity {
 
             if (parcelable != null) {
                 int numMovieObjects = parcelable.length;
-                Movie[] movies = new Movie[numMovieObjects];
+                //Movie[] movies = new Movie[numMovieObjects];
+                List<Movie> movies = new ArrayList<>();
                 for (int i = 0; i < numMovieObjects; i++) {
-                    movies[i] = (Movie) parcelable[i];
+                    //movies[i] = (Movie) parcelable[i];
+                    movies.add((Movie) parcelable[i]);
                 }
 
                 ((MovieAdapter) mAdapter).setMovies(movies);
@@ -100,11 +113,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getMovies(String sortMethod) {
-        URL tmdbSearchUrl = NetworkUtils.buildUrl(sortMethod);
-        if (isOnline()) {
-            new tmdbQueryTask().execute(tmdbSearchUrl);
+        /**
+         * If the sort method is favorites, the data is persisted locally. Else, calls the API
+         */
+        if (sortMethod == getResources().getString(R.string.tmdb_sort_favorites)) {
+            Log.d(LOG_TAG, "Actively retrieving the movies from the database");
+            final LiveData<List<Movie>> movies = mDb.movieDao().getMovies();
+            movies.observe(this, new Observer<List<Movie>>() {
+                @Override
+                public void onChanged(@Nullable List<Movie> movies_) {
+                    Log.d(LOG_TAG, "Receiving database update from LiveData");
+                    ((MovieAdapter) mAdapter).setMovies(movies_);
+                    invalidateOptionsMenu();
+                }
+            });
         } else {
-            showErrorMessage(R.string.error_message_network);
+            URL tmdbSearchUrl = NetworkUtils.buildUrl(sortMethod);
+            if (isOnline()) {
+                new tmdbQueryTask().execute(tmdbSearchUrl);
+            } else {
+                showErrorMessage(R.string.error_message_network);
+            }
         }
     }
 
@@ -170,11 +199,14 @@ public class MainActivity extends AppCompatActivity {
          */
         MenuItem itemPopular = menu.findItem(R.id.sort_pop_desc);
         MenuItem itemVoteAverage = menu.findItem(R.id.sort_vote_count_desc);
+        MenuItem itemFavorites = menu.findItem(R.id.sort_favorites);
 
         if (getSortMethod() == getResources().getString(R.string.tmdb_sort_popular)) {
             itemPopular.setVisible(false);
         } else if (getSortMethod() == getResources().getString(R.string.tmdb_sort_top_rated)) {
             itemVoteAverage.setVisible(false);
+        } else if (getSortMethod() == getResources().getString(R.string.tmdb_sort_favorites)) {
+            itemFavorites.setVisible(false);
         }
 
         return true;
@@ -190,6 +222,10 @@ public class MainActivity extends AppCompatActivity {
             case R.id.sort_vote_count_desc:
                 updateSharedPrefs(getResources().getString(R.string.tmdb_sort_top_rated));
                 getMovies(getResources().getString(R.string.tmdb_sort_top_rated));
+                return true;
+            case R.id.sort_favorites:
+                updateSharedPrefs(getResources().getString(R.string.tmdb_sort_favorites));
+                getMovies(getResources().getString(R.string.tmdb_sort_favorites));
                 return true;
             default:
         }

@@ -4,18 +4,26 @@ import android.content.Context;
 import android.content.Intent;
 import android.example.popularmovies_stage1.R;
 
+import com.example.popularmovies_stage1.Database.AppDatabase;
 import com.example.popularmovies_stage1.model.Movie;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.example.popularmovies_stage1.utils.NetworkUtils;
 import com.squareup.picasso.Picasso;
+
+import java.util.List;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MyViewHolder> {
 
+    private static final String LOG_TAG = AppDatabase.class.getSimpleName();
+
     private Context mContext;
-    private Movie[] movies;
+    //private Movie[] movies;
+    private List<Movie> movies;
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
@@ -29,7 +37,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MyViewHolder
         }
     }
 
-    public MovieAdapter(Context context, Movie[] mMovies) {
+    //public MovieAdapter(Context context, Movie[] mMovies) {
+    public MovieAdapter(Context context, List<Movie> mMovies) {
         mContext = context;
         movies = mMovies;
     }
@@ -77,8 +86,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MyViewHolder
          * now to what movie that item corresponds.
          */
 
+        //Log.d(LOG_TAG, movies.get(position).getPosterPath());
+
         Picasso.get()
-                .load(movies[position].getPosterPath())
+                //.load(movies[position].getPosterPath())
+                .load(NetworkUtils.TMDB_POSTER_BASE_URL + movies.get(position).getPosterPath())
                 .placeholder(R.drawable.round_local_movies_black_24dp)
                 .into(holder.imageView);
     }
@@ -87,21 +99,29 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MyViewHolder
     @Override
     public int getItemCount() {
         if (movies != null) {
-            return movies.length;
+            //return movies.length;
+            return movies.size();
         } else {
             return 0;
         }
     }
 
     public Movie getItem(int position) {
-        if (movies == null || movies.length == 0) {
+        //if (movies == null || movies.length == 0) {
+        if (movies == null || movies.size() == 0) {
             return null;
         }
 
-        return movies[position];
+        //return movies[position];
+        return movies.get(position);
     }
 
-    public void setMovies(Movie[] movies) {
+    /*public void setMovies(Movie[] movies) {
+        this.movies = movies;
+        notifyDataSetChanged();
+    }*/
+
+    public void setMovies(List<Movie> movies) {
         this.movies = movies;
         notifyDataSetChanged();
     }
