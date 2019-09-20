@@ -1,12 +1,13 @@
 package com.example.popularmovies_stage1;
 
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.example.popularmovies_stage1.R;
 
 import com.example.popularmovies_stage1.Database.AppDatabase;
+import com.example.popularmovies_stage1.Database.MainViewModel;
 import com.example.popularmovies_stage1.model.Movie;
 import com.example.popularmovies_stage1.utils.JsonUtils;
 import com.example.popularmovies_stage1.utils.NetworkUtils;
@@ -26,7 +27,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.IOException;
 import java.net.URL;
@@ -117,12 +117,14 @@ public class MainActivity extends AppCompatActivity {
          * If the sort method is favorites, the data is persisted locally. Else, calls the API
          */
         if (sortMethod == getResources().getString(R.string.tmdb_sort_favorites)) {
-            Log.d(LOG_TAG, "Actively retrieving the movies from the database");
-            final LiveData<List<Movie>> movies = mDb.movieDao().getMovies();
-            movies.observe(this, new Observer<List<Movie>>() {
+            //Log.d(LOG_TAG, "Actively retrieving the movies from the database");
+            //final LiveData<List<Movie>> movies = mDb.movieDao().getMovies();
+            // Setup ViewModel
+            MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+            viewModel.getMovies().observe(this, new Observer<List<Movie>>() {
                 @Override
                 public void onChanged(@Nullable List<Movie> movies_) {
-                    Log.d(LOG_TAG, "Receiving database update from LiveData");
+                    Log.d(LOG_TAG, "Updating list of movies from LiveData in ViewModel");
                     ((MovieAdapter) mAdapter).setMovies(movies_);
                     invalidateOptionsMenu();
                 }
