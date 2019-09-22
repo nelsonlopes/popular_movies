@@ -1,4 +1,4 @@
-package com.example.popularmovies_stage1;
+package com.example.popularmovies;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

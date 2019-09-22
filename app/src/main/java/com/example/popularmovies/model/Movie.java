@@ -1,6 +1,4 @@
-package com.example.popularmovies_stage1.model;
-
-import com.example.popularmovies_stage1.utils.NetworkUtils;
+package com.example.popularmovies.model;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
@@ -28,8 +26,8 @@ public class Movie implements Parcelable {
     public Movie() {
     }
 
-    public Movie(int id, String originalTitle, String overview, Double voteAverage, String releaseDate,
-                 String posterPath, String backdropPath) {
+    public Movie(int id, String originalTitle, String overview, Double voteAverage,
+                 String releaseDate, String posterPath, String backdropPath) {
         this.id = id;
         this.originalTitle = originalTitle;
         this.overview = overview;
@@ -80,17 +78,11 @@ public class Movie implements Parcelable {
 
     public void setReleaseDate(String releaseDate) { this.releaseDate = releaseDate; }
 
-    public String getPosterPath() {
-        //return NetworkUtils.TMDB_POSTER_BASE_URL + posterPath;
-        return posterPath;
-    }
+    public String getPosterPath() { return posterPath; }
 
     public void setPosterPath(String posterPath) { this.posterPath = posterPath; }
 
-    public String getBackdropPath() {
-        //return NetworkUtils.TMDB_POSTER_BASE_URL + backdropPath;
-        return backdropPath;
-    }
+    public String getBackdropPath() { return backdropPath; }
 
     public void setBackdropPath(String backdropPath) { this.backdropPath = backdropPath; }
 

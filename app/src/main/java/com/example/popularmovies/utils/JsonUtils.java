@@ -1,6 +1,7 @@
-package com.example.popularmovies_stage1.utils;
+package com.example.popularmovies.utils;
 
-import com.example.popularmovies_stage1.model.Movie;
+import com.example.popularmovies.model.Movie;
+import com.example.popularmovies.model.Trailer;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -10,9 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JsonUtils {
-    private static final String KEY_RESULTS = "results";
 
+    // Commom
+    private static final String KEY_RESULTS = "results";
     private static final String KEY_ID = "id";
+
+    // Related to Movies
     private static final String KEY_ORIGINAL_TITLE = "original_title";
     private static final String KEY_OVERVIEW = "overview";
     private static final String KEY_VOTE_AVERAGE = "vote_average";
@@ -20,9 +24,14 @@ public class JsonUtils {
     private static final String KEY_POSTER_PATH = "poster_path";
     private static final String KEY_BACKDROP_PATH = "backdrop_path";
 
-    //public static Movie[] parseMovieJson(String json) {
+    // Related to Trailers
+    private static final String KEY_KEY = "key";
+    private static final String KEY_NAME = "name";
+    private static final String KEY_SITE = "site";
+    private static final String KEY_TYPE = "type";
+
+    // Parse Movies
     public static List<Movie> parseMovieJson(String json) {
-        //Movie[] movies = null;
         List<Movie> movies = null;
 
         try {
@@ -30,22 +39,13 @@ public class JsonUtils {
 
             JSONArray results = list.getJSONArray(KEY_RESULTS);
 
-            //movies = new Movie[results.length()];
             movies = new ArrayList<>();
 
             for (int i = 0; i < results.length(); i++) {
-                //movies[i] = new Movie();
                 Movie movie = new Movie();
 
                 JSONObject result = results.getJSONObject(i);
 
-                /*movies[i].setId(result.getInt(KEY_ID));
-                movies[i].setOriginalTitle(result.getString(KEY_ORIGINAL_TITLE));
-                movies[i].setOverview(result.getString(KEY_OVERVIEW));
-                movies[i].setVoteAverage(result.getDouble(KEY_VOTE_AVERAGE));
-                movies[i].setReleaseDate(result.getString(KEY_RELEASE_DATE));
-                movies[i].setPosterPath(result.optString(KEY_POSTER_PATH));
-                movies[i].setBackdropPath(result.optString(KEY_BACKDROP_PATH));*/
                 movie.setId(result.getInt(KEY_ID));
                 movie.setOriginalTitle(result.getString(KEY_ORIGINAL_TITLE));
                 movie.setOverview(result.getString(KEY_OVERVIEW));
@@ -61,5 +61,36 @@ public class JsonUtils {
         }
 
         return movies;
+    }
+
+    // Parse Trailers
+    public static List<Trailer> parseTrailerJson(String json) {
+        List<Trailer> trailers = null;
+
+        try {
+            JSONObject list = new JSONObject(json);
+
+            JSONArray results = list.getJSONArray(KEY_RESULTS);
+
+            trailers = new ArrayList<>();
+
+            for (int i = 0; i < results.length(); i++) {
+                Trailer trailer = new Trailer();
+
+                JSONObject result = results.getJSONObject(i);
+
+                trailer.setId(result.getString(KEY_ID));
+                trailer.setKey(result.getString(KEY_KEY));
+                trailer.setName(result.getString(KEY_NAME));
+                trailer.setSite(result.getString(KEY_SITE));
+                trailer.setType(result.getString(KEY_TYPE));
+
+                trailers.add(trailer);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return trailers;
     }
 }

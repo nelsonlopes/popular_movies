@@ -1,4 +1,4 @@
-package com.example.popularmovies_stage1.Database;
+package com.example.popularmovies.database;
 
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.Room;
@@ -7,7 +7,7 @@ import android.arch.persistence.room.TypeConverters;
 import android.content.Context;
 import android.util.Log;
 
-import com.example.popularmovies_stage1.model.Movie;
+import com.example.popularmovies.model.Movie;
 
 @Database(entities = {Movie.class}, version = 1, exportSchema = false)
 @TypeConverters(DateConverter.class)
@@ -25,7 +25,6 @@ public abstract class AppDatabase extends RoomDatabase {
                 Log.d(LOG_TAG, "Creating new database instance");
                 sInstance = Room.databaseBuilder(context.getApplicationContext(),
                         AppDatabase.class, AppDatabase.DATABASE_NAME)
-                        //.allowMainThreadQueries() // TODO to remove
                         .build();
             }
         }

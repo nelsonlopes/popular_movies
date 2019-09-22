@@ -1,4 +1,4 @@
-package com.example.popularmovies_stage1.Database;
+package com.example.popularmovies.database;
 
 import android.arch.persistence.room.TypeConverter;
 

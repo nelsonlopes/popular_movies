@@ -1,18 +1,16 @@
-package com.example.popularmovies_stage1;
+package com.example.popularmovies;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.example.popularmovies_stage1.R;
 
-import com.example.popularmovies_stage1.Database.AppDatabase;
-import com.example.popularmovies_stage1.Database.MainViewModel;
-import com.example.popularmovies_stage1.model.Movie;
-import com.example.popularmovies_stage1.utils.JsonUtils;
-import com.example.popularmovies_stage1.utils.NetworkUtils;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import com.example.popularmovies.adapters.MovieAdapter;
+import com.example.popularmovies.database.AppDatabase;
+import com.example.popularmovies.database.MainViewModel;
+import com.example.popularmovies.model.Movie;
+import com.example.popularmovies.utils.JsonUtils;
+import com.example.popularmovies.utils.NetworkUtils;
 import android.os.AsyncTask;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
@@ -38,6 +36,7 @@ import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity {
 
+    // TODO rever sugestão da revisão de código da stage 1
     private static final String LOG_TAG = AppDatabase.class.getSimpleName();
 
     @BindView(R.id.rv_movies)
@@ -49,19 +48,21 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.pb_loading_indicator)
     ProgressBar mLoadingIndicator;
 
-    //private Movie[] movies = null;
     private List<Movie> movies = null;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager layoutManager;
 
-    public AppDatabase mDb; // TODO todo o programa devia usar esta variável publica, em vez de ter nos details também
+    // TODO Use this variable in all the program?
+    public AppDatabase mDb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // bind the view using butterknife
+        /**
+         * Bind the view using Butter Knife
+         */
         ButterKnife.bind(this);
 
         mDb = AppDatabase.getInstance(getApplicationContext());
@@ -77,21 +78,28 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // use this setting to improve performance if you know that changes
-        // in content do not change the layout size of the RecyclerView
+        /**
+         * Use this setting to improve performance as we know that changes in content do not change
+         * the layout size of the RecyclerView
+         */
         recyclerView.setHasFixedSize(true);
 
-        // use a grid layout manager
-        //layoutManager = new GridLayoutManager(this, 2);
+        /**
+         * Use a grid layout manager
+         */
         layoutManager = new GridLayoutManager(this,2);
         recyclerView.setLayoutManager(layoutManager);
 
-        // specify an adapter
+        /**
+         * Specify an adapter
+         */
         mAdapter = new MovieAdapter(this, movies);
 
         recyclerView.setAdapter(mAdapter);
 
         // Get Movies - API call + JSON parse + GridView populate
+        // TODO as ViewModel was implemented, should I use savedInstanceState only for popular and
+        //  top rated movies, and not for the favorites?
         if (savedInstanceState == null || !savedInstanceState.containsKey(getString(R.string.parcel_movie))) {
             getMovies(getSortMethod());
         } else {
@@ -100,10 +108,8 @@ public class MainActivity extends AppCompatActivity {
 
             if (parcelable != null) {
                 int numMovieObjects = parcelable.length;
-                //Movie[] movies = new Movie[numMovieObjects];
                 List<Movie> movies = new ArrayList<>();
                 for (int i = 0; i < numMovieObjects; i++) {
-                    //movies[i] = (Movie) parcelable[i];
                     movies.add((Movie) parcelable[i]);
                 }
 
@@ -117,8 +123,7 @@ public class MainActivity extends AppCompatActivity {
          * If the sort method is favorites, the data is persisted locally. Else, calls the API
          */
         if (sortMethod == getResources().getString(R.string.tmdb_sort_favorites)) {
-            //Log.d(LOG_TAG, "Actively retrieving the movies from the database");
-            //final LiveData<List<Movie>> movies = mDb.movieDao().getMovies();
+            Log.d(LOG_TAG, "Actively retrieving the movies from the database");
             // Setup ViewModel
             MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
             viewModel.getMovies().observe(this, new Observer<List<Movie>>() {
@@ -131,22 +136,12 @@ public class MainActivity extends AppCompatActivity {
             });
         } else {
             URL tmdbSearchUrl = NetworkUtils.buildUrl(sortMethod);
-            if (isOnline()) {
+            if (NetworkUtils.isOnline(getApplicationContext())) {
                 new tmdbQueryTask().execute(tmdbSearchUrl);
             } else {
                 showErrorMessage(R.string.error_message_network);
             }
         }
-    }
-
-    /** Checks if there is internet connection
-     * Reference: https://stackoverflow.com/questions/1560788/how-to-check-internet-access-on-android-inetaddress-never-times-out/2001824#2001824
-     */
-    private boolean isOnline() {
-        ConnectivityManager cm =
-                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
-        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 
     private class tmdbQueryTask extends AsyncTask<URL, Void, String> {
@@ -163,7 +158,6 @@ public class MainActivity extends AppCompatActivity {
             String tmdbSearchResults = null;
             try {
                 tmdbSearchResults = NetworkUtils.getResponseFromHttpUrl(searchUrl);
-                Log.d("POP-", tmdbSearchResults);
             } catch (IOException e) {
                 e.printStackTrace();
             }

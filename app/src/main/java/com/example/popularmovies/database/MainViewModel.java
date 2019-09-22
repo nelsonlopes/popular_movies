@@ -1,4 +1,4 @@
-package com.example.popularmovies_stage1.Database;
+package com.example.popularmovies.database;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
@@ -6,7 +6,7 @@ import android.arch.lifecycle.LiveData;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.example.popularmovies_stage1.model.Movie;
+import com.example.popularmovies.model.Movie;
 
 import java.util.List;
 

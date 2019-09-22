@@ -1,4 +1,4 @@
-package com.example.popularmovies_stage1;
+package com.example.popularmovies;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -53,13 +53,9 @@ public class AppExecutors {
         return diskIO;
     }
 
-    public Executor mainThread() {
-        return mainThread;
-    }
+    public Executor mainThread() { return mainThread; }
 
-    public Executor networkIO() {
-        return networkIO;
-    }
+    public Executor networkIO() { return networkIO; }
 
     private static class MainThreadExecutor implements Executor {
         private Handler mainThreadHandler = new Handler(Looper.getMainLooper());
