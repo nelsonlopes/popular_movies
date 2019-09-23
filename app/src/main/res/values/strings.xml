@@ -17,6 +17,7 @@
     <!-- Passing the Movie in the Intent -->
     <string name="parcel_movie">PARCEL_MOVIE</string>
     <string name="parcel_trailer">PARCEL_TRAILER</string>
+    <string name="parcel_review">PARCEL_REVIEW</string>
 
     <!-- Movie details -->
     <!-- Titles -->
@@ -24,6 +25,7 @@
     <string name="vote_average_title">User Rating</string>
     <string name="overview_title">Plot Synopsis</string>
     <string name="trailers_title">Trailers</string>
+    <string name="reviews_title">Reviews</string>
     <string name="backdrop_content_description">Movie poster image thumbnail</string>
     <string name="poster_content_description">Movie poster</string>
 

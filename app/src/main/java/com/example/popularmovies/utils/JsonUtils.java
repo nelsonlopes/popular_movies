@@ -1,6 +1,7 @@
 package com.example.popularmovies.utils;
 
 import com.example.popularmovies.model.Movie;
+import com.example.popularmovies.model.Review;
 import com.example.popularmovies.model.Trailer;
 
 import org.json.JSONArray;
@@ -29,6 +30,11 @@ public class JsonUtils {
     private static final String KEY_NAME = "name";
     private static final String KEY_SITE = "site";
     private static final String KEY_TYPE = "type";
+
+    // Related to Reviews
+    private static final String KEY_AUTHOR = "author";
+    private static final String KEY_CONTENT = "content";
+    private static final String KEY_URL = "url";
 
     // Parse Movies
     public static List<Movie> parseMovieJson(String json) {
@@ -92,5 +98,35 @@ public class JsonUtils {
         }
 
         return trailers;
+    }
+
+    // Parse Reviews
+    public static List<Review> parseReviewJson(String json) {
+        List<Review> reviews = null;
+
+        try {
+            JSONObject list = new JSONObject(json);
+
+            JSONArray results = list.getJSONArray(KEY_RESULTS);
+
+            reviews = new ArrayList<>();
+
+            for (int i = 0; i < results.length(); i++) {
+                Review review = new Review();
+
+                JSONObject result = results.getJSONObject(i);
+
+                review.setId(result.getString(KEY_ID));
+                review.setAuthor(result.getString(KEY_AUTHOR));
+                review.setContent(result.getString(KEY_CONTENT));
+                review.setUrl(result.getString(KEY_URL));
+
+                reviews.add(review);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return reviews;
     }
 }

@@ -3,6 +3,7 @@ package com.example.popularmovies;
 import android.content.Intent;
 import android.example.popularmovies_stage1.R;
 
+import com.example.popularmovies.adapters.ReviewAdapter;
 import com.example.popularmovies.adapters.TrailerAdapter;
 import com.example.popularmovies.database.AppDatabase;
 import com.example.popularmovies.model.Movie;
@@ -20,6 +21,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.popularmovies.model.Review;
 import com.example.popularmovies.model.Trailer;
 import com.example.popularmovies.utils.JsonUtils;
 import com.example.popularmovies.utils.NetworkUtils;
@@ -47,6 +49,8 @@ public class DetailsActivity extends AppCompatActivity { ;
     Button btnFavorite;
     @BindView(R.id.rv_trailers)
     RecyclerView rv_trailers;
+    @BindView(R.id.rv_reviews)
+    RecyclerView rv_reviews;
     // Create a variable to store a reference to the error message TextView
     @BindView(R.id.tv_error_message_display)
     TextView mErrorMessageDisplay;
@@ -56,9 +60,15 @@ public class DetailsActivity extends AppCompatActivity { ;
 
     private Movie movie;
 
+    // Trailers
     private List<Trailer> trailers = null;
     private RecyclerView.Adapter mAdapterTrailers;
     private RecyclerView.LayoutManager layoutManagerTrailers;
+
+    // Reviews
+    private List<Review> reviews = null;
+    private RecyclerView.Adapter mAdapterReviews;
+    private RecyclerView.LayoutManager layoutManagerReviews;
 
     public AppDatabase mDb;
 
@@ -96,7 +106,7 @@ public class DetailsActivity extends AppCompatActivity { ;
         /**
          * Trailers
          */
-        // use a grid layout manager
+        // use a linear layout manager
         layoutManagerTrailers = new LinearLayoutManager(this);
         rv_trailers.setLayoutManager(layoutManagerTrailers);
 
@@ -105,7 +115,7 @@ public class DetailsActivity extends AppCompatActivity { ;
 
         rv_trailers.setAdapter(mAdapterTrailers);
 
-        // Get Trailers - API call + JSON parse + GridView populate
+        // Get Trailers - API call + JSON parse + RecycleView populate
         if (savedInstanceState == null || !savedInstanceState.containsKey(getString(R.string.parcel_trailer))) {
             getTrailers(movie.getId());
         } else {
@@ -120,6 +130,36 @@ public class DetailsActivity extends AppCompatActivity { ;
                 }
 
                 ((TrailerAdapter) mAdapterTrailers).setTrailers(trailers);
+            }
+        }
+
+        /**
+         * Reviews
+         */
+        // use a linear layout manager
+        layoutManagerReviews = new LinearLayoutManager(this);
+        rv_reviews.setLayoutManager(layoutManagerReviews);
+
+        // specify an adapter
+        mAdapterReviews = new ReviewAdapter(this, reviews);
+
+        rv_reviews.setAdapter(mAdapterReviews);
+
+        // Get Reviews - API call + JSON parse + RecycleView populate
+        if (savedInstanceState == null || !savedInstanceState.containsKey(getString(R.string.parcel_review))) {
+            getReviews(movie.getId());
+        } else {
+            Parcelable[] parcelableReviews = savedInstanceState.
+                    getParcelableArray(getString(R.string.parcel_review));
+
+            if (parcelableReviews != null) {
+                int numReviewObjects = parcelableReviews.length;
+                List<Review> reviews = new ArrayList<>();
+                for (int i = 0; i < numReviewObjects; i++) {
+                    reviews.add((Review) parcelableReviews[i]);
+                }
+
+                ((ReviewAdapter) mAdapterReviews).setReviews(reviews);
             }
         }
     }
@@ -174,10 +214,20 @@ public class DetailsActivity extends AppCompatActivity { ;
         isFavorite();
     }
 
+    // TODO merge this method and the next
     private void getTrailers(int movieId) {
-        URL tmdbSearchUrl = NetworkUtils.buildUrl(movieId);
+        URL tmdbSearchUrl = NetworkUtils.buildUrl(movieId, "videos");
         if (NetworkUtils.isOnline(getApplicationContext())) {
             new tmdbQueryTask().execute(tmdbSearchUrl);
+        } else {
+            showErrorMessage(R.string.error_message_network);
+        }
+    }
+
+    private void getReviews(int movieId) {
+        URL tmdbSearchUrl = NetworkUtils.buildUrl(movieId, "reviews");
+        if (NetworkUtils.isOnline(getApplicationContext())) {
+            new tmdbQueryTaskReviews().execute(tmdbSearchUrl);
         } else {
             showErrorMessage(R.string.error_message_network);
         }
@@ -222,6 +272,45 @@ public class DetailsActivity extends AppCompatActivity { ;
         }
     }
 
+    private class tmdbQueryTaskReviews extends AsyncTask<URL, Void, String> {
+        // Override onPreExecute to set the loading indicator to visible
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mLoadingIndicator.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected String doInBackground(URL... params) {
+            URL searchUrl = params[0];
+            String tmdbSearchResults = null;
+            try {
+                tmdbSearchResults = NetworkUtils.getResponseFromHttpUrl(searchUrl);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return tmdbSearchResults;
+        }
+
+        @Override
+        protected void onPostExecute(String tmdbSearchResults) {
+            // As soon as the loading is complete, hide the loading indicator
+            mLoadingIndicator.setVisibility(View.INVISIBLE);
+            if (tmdbSearchResults != null && !tmdbSearchResults.equals("")) {
+                /**
+                 * Call showJsonDataView, parse the JSON and populate the RecyclerView if we have
+                 * valid, non-null results
+                 */
+                showReviewsList();
+                reviews = JsonUtils.parseReviewJson(tmdbSearchResults);
+                ((ReviewAdapter) mAdapterReviews).setReviews(reviews);
+            } else {
+                // Call showErrorMessage if the result is null in onPostExecute
+                showErrorMessage(R.string.error_message_results);
+            }
+        }
+    }
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         int numTrailerObjects = mAdapterTrailers.getItemCount();
@@ -247,6 +336,18 @@ public class DetailsActivity extends AppCompatActivity { ;
         mErrorMessageDisplay.setVisibility(View.GONE);
         // Then, make sure the JSON data is visible
         rv_trailers.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * This method will make the RecyclerView visible and hide the error message.
+     * Since it is okay to redundantly set the visibility of a View, we don't
+     * need to check whether each view is currently visible or invisible.
+     */
+    private void showReviewsList() {
+        // First, make sure the error is invisible
+        mErrorMessageDisplay.setVisibility(View.GONE);
+        // Then, make sure the JSON data is visible
+        rv_reviews.setVisibility(View.VISIBLE);
     }
 
     /**

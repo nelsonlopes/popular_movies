@@ -91,9 +91,23 @@
             android:layout_width="match_parent"
             android:layout_height="fill_parent"
             android:id="@+id/rv_trailers"
-            android:scrollbars="none"
-            android:layout_marginBottom="?attr/actionBarSize" />
-        <!-- RecyclerView was not showing the last element. This was the workaround that fixed it -->
+            android:scrollbars="none" />
+
+        <!-- Reviews -->
+        <TextView
+            android:id="@+id/reviews_title_tv"
+            android:text="@string/reviews_title"
+            android:layout_width="wrap_content"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorSecondary" />
+
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/rv_reviews"
+            android:scrollbars="none" />
 
         <TextView
             android:id="@+id/tv_error_message_display"

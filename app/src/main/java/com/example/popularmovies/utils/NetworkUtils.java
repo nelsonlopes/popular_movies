@@ -41,8 +41,8 @@ public class NetworkUtils {
     }
 
     // Trailers
-    public static URL buildUrl(int movieId) {
-        Uri builtUri = Uri.parse(TMDB_BASE_URL + movieId + "/videos").buildUpon()
+    public static URL buildUrl(int movieId, String content) {
+        Uri builtUri = Uri.parse(TMDB_BASE_URL + movieId + "/" + content).buildUpon()
                 .appendQueryParameter(PARAM_API_KEY, BuildConfig.TmdbApiKey)
                 .build();
 
