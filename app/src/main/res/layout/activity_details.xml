@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:padding="16dp">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -23,7 +23,8 @@
             android:id="@+id/btnFavorite"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:layout_marginTop="16dp" />
+            android:layout_marginTop="16dp"
+            android:layout_below="@id/backdrop_path_iv" />
 
         <!-- Release Date -->
         <TextView
@@ -33,14 +34,16 @@
             android:textStyle="bold"
             android:layout_marginTop="16dp"
             android:layout_height="wrap_content"
-            android:textColor="@color/colorSecondary" />
+            android:textColor="@color/colorSecondary"
+            android:layout_below="@id/btnFavorite" />
 
         <TextView
             android:id="@+id/release_date_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="15sp"
-            android:textColor="@color/text" />
+            android:textColor="@color/text"
+            android:layout_below="@id/release_date_title_tv" />
 
         <!-- Vote Average -->
         <TextView
@@ -50,14 +53,16 @@
             android:textStyle="bold"
             android:layout_marginTop="16dp"
             android:layout_height="wrap_content"
-            android:textColor="@color/colorSecondary" />
+            android:textColor="@color/colorSecondary"
+            android:layout_below="@id/release_date_tv" />
 
         <TextView
             android:id="@+id/vote_average_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="15sp"
-            android:textColor="@color/text" />
+            android:textColor="@color/text"
+            android:layout_below="@id/vote_average_title_tv" />
 
         <!-- Overview -->
         <TextView
@@ -67,7 +72,8 @@
             android:textStyle="bold"
             android:layout_marginTop="16dp"
             android:layout_height="wrap_content"
-            android:textColor="@color/colorSecondary" />
+            android:textColor="@color/colorSecondary"
+            android:layout_below="@id/vote_average_tv" />
 
         <TextView
             android:id="@+id/overview_tv"
@@ -75,7 +81,8 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:textSize="15sp"
-            android:textColor="@color/text" />
+            android:textColor="@color/text"
+            android:layout_below="@id/overview_title_tv" />
 
         <!-- Trailers -->
         <TextView
@@ -85,13 +92,15 @@
             android:textStyle="bold"
             android:layout_marginTop="16dp"
             android:layout_height="wrap_content"
-            android:textColor="@color/colorSecondary" />
+            android:textColor="@color/colorSecondary"
+            android:layout_below="@id/overview_tv" />
 
         <android.support.v7.widget.RecyclerView
             android:layout_width="match_parent"
-            android:layout_height="fill_parent"
+            android:layout_height="wrap_content"
             android:id="@+id/rv_trailers"
-            android:scrollbars="none" />
+            android:scrollbars="none"
+            android:layout_below="@id/trailers_title_tv" />
 
         <!-- Reviews -->
         <TextView
@@ -101,13 +110,15 @@
             android:textStyle="bold"
             android:layout_marginTop="16dp"
             android:layout_height="wrap_content"
-            android:textColor="@color/colorSecondary" />
+            android:textColor="@color/colorSecondary"
+            android:layout_below="@id/rv_trailers" />
 
         <android.support.v7.widget.RecyclerView
             android:layout_width="match_parent"
-            android:layout_height="fill_parent"
+            android:layout_height="wrap_content"
             android:id="@+id/rv_reviews"
-            android:scrollbars="none" />
+            android:scrollbars="none"
+            android:layout_below="@id/reviews_title_tv" />
 
         <TextView
             android:id="@+id/tv_error_message_display"
@@ -115,15 +126,17 @@
             android:layout_height="wrap_content"
             android:textSize="22sp"
             android:padding="16dp"
-            android:visibility="invisible" />
+            android:visibility="invisible"
+            android:layout_below="@id/rv_reviews" />
 
         <ProgressBar
             android:id="@+id/pb_loading_indicator"
             android:layout_height="42dp"
             android:layout_width="42dp"
             android:layout_gravity="center"
-            android:visibility="invisible" />
+            android:visibility="invisible"
+            android:layout_below="@id/tv_error_message_display" />
 
-    </LinearLayout>
+    </RelativeLayout>
 
 </ScrollView>
