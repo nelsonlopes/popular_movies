@@ -34,7 +34,7 @@ public class Review implements Parcelable {
         this.id = id;
     }
 
-    public String getAuhor() {
+    public String getAuthor() {
         return author;
     }
 

@@ -12,6 +12,7 @@ import android.os.AsyncTask;
 import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -110,6 +111,9 @@ public class DetailsActivity extends AppCompatActivity { ;
         layoutManagerTrailers = new LinearLayoutManager(this);
         rv_trailers.setLayoutManager(layoutManagerTrailers);
 
+        rv_trailers.addItemDecoration(new DividerItemDecoration(getApplicationContext(),
+                DividerItemDecoration.VERTICAL));
+
         // specify an adapter
         mAdapterTrailers = new TrailerAdapter(this, trailers);
 
@@ -139,6 +143,9 @@ public class DetailsActivity extends AppCompatActivity { ;
         // use a linear layout manager
         layoutManagerReviews = new LinearLayoutManager(this);
         rv_reviews.setLayoutManager(layoutManagerReviews);
+
+        rv_reviews.addItemDecoration(new DividerItemDecoration(getApplicationContext(),
+                DividerItemDecoration.VERTICAL));
 
         // specify an adapter
         mAdapterReviews = new ReviewAdapter(this, reviews);

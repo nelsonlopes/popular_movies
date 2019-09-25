@@ -36,4 +36,8 @@
     <string name="error_message_results">Failed to get results. Tap here to try again.</string>
     <!-- Error internet connections -->
     <string name="error_message_network">Check your internet connection. Tap here to try again.</string>
+
+    <!-- Reviews -->
+    <string name="review_author_label">Author</string>
+    <string name="review_content_label">Review</string>
 </resources>
