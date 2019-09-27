@@ -22,6 +22,7 @@ Then, add your API key in the file gradle.properties as follows: api_key="your_a
 - Room
 - LiveData
 - ViewModel
+- Repository (although not being a part of the Android Architecture Components, was added as it is a best practice)
 
 ## Other libraries and patterns
 - [Retrofit](https://github.com/square/retrofit)
