@@ -9,9 +9,10 @@ import com.example.popularmovies.adapters.MovieAdapter;
 import com.example.popularmovies.database.AppDatabase;
 import com.example.popularmovies.database.MoviesViewModel;
 import com.example.popularmovies.model.Movie;
-import com.example.popularmovies.utils.JsonUtils;
-import com.example.popularmovies.utils.NetworkUtils;
-import android.os.AsyncTask;
+import com.example.popularmovies.model.Movies;
+import com.example.popularmovies.network.TmdbRestClient;
+import com.example.popularmovies.network.NetworkUtils;
+
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
@@ -26,13 +27,14 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -135,52 +137,28 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         } else {
-            URL tmdbSearchUrl = NetworkUtils.buildUrl(sortMethod);
             if (NetworkUtils.isOnline(getApplicationContext())) {
-                new tmdbQueryTask().execute(tmdbSearchUrl);
+                Call<Movies> call = TmdbRestClient.getInstance().getMovies().getMovies(sortMethod);
+                Callback<Movies> callback = new Callback<Movies>() {
+                    @Override
+                    public void onResponse(Call<Movies> call, Response<Movies> response) {
+                        if (!response.isSuccessful()) {
+                            showErrorMessage(R.string.error_message_results);
+                            return;
+                        }
+                        movies = response.body().getMovies();
+                        ((MovieAdapter) mAdapter).setMovies(movies);
+                        showMoviesPosters();
+                    }
+
+                    @Override
+                    public void onFailure(Call<Movies> call, Throwable t) {
+                        showErrorMessage(R.string.error_message_results);
+                    }
+                };
+                call.enqueue(callback);
             } else {
                 showErrorMessage(R.string.error_message_network);
-            }
-        }
-    }
-
-    private class tmdbQueryTask extends AsyncTask<URL, Void, String> {
-        // Override onPreExecute to set the loading indicator to visible
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mLoadingIndicator.setVisibility(View.VISIBLE);
-        }
-
-        @Override
-        protected String doInBackground(URL... params) {
-            URL searchUrl = params[0];
-            String tmdbSearchResults = null;
-            try {
-                tmdbSearchResults = NetworkUtils.getResponseFromHttpUrl(searchUrl);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return tmdbSearchResults;
-        }
-
-        @Override
-        protected void onPostExecute(String tmdbSearchResults) {
-            // As soon as the loading is complete, hide the loading indicator
-            mLoadingIndicator.setVisibility(View.INVISIBLE);
-            if (tmdbSearchResults != null && !tmdbSearchResults.equals("")) {
-                /**
-                 * Call showJsonDataView, parse the JSON and populate the RecyclerView if we have
-                 * valid, non-null results
-                  */
-                showMoviesPosters();
-                movies = JsonUtils.parseMovieJson(tmdbSearchResults);
-                ((MovieAdapter) mAdapter).setMovies(movies);
-                // Updates menu items (hides the active option)
-                invalidateOptionsMenu();
-            } else {
-                // Call showErrorMessage if the result is null in onPostExecute
-                showErrorMessage(R.string.error_message_results);
             }
         }
     }

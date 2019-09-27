@@ -11,7 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.example.popularmovies.utils.NetworkUtils;
+import com.example.popularmovies.network.NetworkUtils;
+import com.example.popularmovies.network.TmdbRestClient;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -74,7 +75,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MyViewHolder
          * now to what movie that item corresponds.
          */
         Picasso.get()
-                .load(NetworkUtils.TMDB_POSTER_BASE_URL + movies.get(position).getPosterPath())
+                .load(TmdbRestClient.TMDB_POSTER_BASE_URL +
+                        movies.get(position).getPosterPath())
                 .placeholder(R.drawable.round_local_movies_black_24dp)
                 .into(holder.imageView);
     }

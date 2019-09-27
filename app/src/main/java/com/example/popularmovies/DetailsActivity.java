@@ -8,7 +8,6 @@ import com.example.popularmovies.adapters.TrailerAdapter;
 import com.example.popularmovies.database.AppDatabase;
 import com.example.popularmovies.model.Movie;
 
-import android.os.AsyncTask;
 import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -23,21 +22,22 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.popularmovies.model.Review;
+import com.example.popularmovies.model.Reviews;
 import com.example.popularmovies.model.Trailer;
-import com.example.popularmovies.utils.JsonUtils;
-import com.example.popularmovies.utils.NetworkUtils;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.example.popularmovies.model.Trailers;
+import com.example.popularmovies.network.TmdbRestClient;
+import com.example.popularmovies.network.NetworkUtils;
 import com.squareup.picasso.Picasso;
 
-import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class DetailsActivity extends AppCompatActivity { ;
     @BindView(R.id.vote_average_tv)
@@ -98,7 +98,7 @@ public class DetailsActivity extends AppCompatActivity { ;
 
         setTitle(movie.getOriginalTitle());
         Picasso.get()
-                .load(NetworkUtils.TMDB_POSTER_BASE_URL + movie.getBackdropPath())
+                .load(TmdbRestClient.TMDB_POSTER_BASE_URL + movie.getBackdropPath())
                 .placeholder(R.drawable.round_local_movies_black_24dp)
                 .into(backdropPathIv);
         isFavorite();
@@ -234,100 +234,55 @@ public class DetailsActivity extends AppCompatActivity { ;
         isFavorite();
     }
 
-    // TODO merge this method and the next
     private void getTrailers(int movieId) {
-        URL tmdbSearchUrl = NetworkUtils.buildUrl(movieId, "videos");
         if (NetworkUtils.isOnline(getApplicationContext())) {
-            new tmdbQueryTask().execute(tmdbSearchUrl);
+            Call<Trailers> call = TmdbRestClient.getInstance().getTrailers().getTrailers(movieId);
+            Callback<Trailers> callback = new Callback<Trailers>() {
+                @Override
+                public void onResponse(Call<Trailers> call, Response<Trailers> response) {
+                    if (!response.isSuccessful()) {
+                        showErrorMessage(R.string.error_message_results);
+                        return;
+                    }
+                    trailers = response.body().getTrailers();
+                    ((TrailerAdapter) mAdapterTrailers).setTrailers(trailers);
+                    showTrailersList();
+                }
+
+                @Override
+                public void onFailure(Call<Trailers> call, Throwable t) {
+                    showErrorMessage(R.string.error_message_results);
+                }
+            };
+            call.enqueue(callback);
         } else {
             showErrorMessage(R.string.error_message_network);
         }
     }
 
     private void getReviews(int movieId) {
-        URL tmdbSearchUrl = NetworkUtils.buildUrl(movieId, "reviews");
         if (NetworkUtils.isOnline(getApplicationContext())) {
-            new tmdbQueryTaskReviews().execute(tmdbSearchUrl);
+            Call<Reviews> call = TmdbRestClient.getInstance().getReviews().getReviews(movieId);
+            Callback<Reviews> callback = new Callback<Reviews>() {
+                @Override
+                public void onResponse(Call<Reviews> call, Response<Reviews> response) {
+                    if (!response.isSuccessful()) {
+                        showErrorMessage(R.string.error_message_results);
+                        return;
+                    }
+                    reviews = response.body().getReviews();
+                    ((ReviewAdapter) mAdapterReviews).setReviews(reviews);
+                    showReviewsList();
+                }
+
+                @Override
+                public void onFailure(Call<Reviews> call, Throwable t) {
+                    showErrorMessage(R.string.error_message_results);
+                }
+            };
+            call.enqueue(callback);
         } else {
             showErrorMessage(R.string.error_message_network);
-        }
-    }
-
-    private class tmdbQueryTask extends AsyncTask<URL, Void, String> {
-        // Override onPreExecute to set the loading indicator to visible
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mLoadingIndicator.setVisibility(View.VISIBLE);
-        }
-
-        @Override
-        protected String doInBackground(URL... params) {
-            URL searchUrl = params[0];
-            String tmdbSearchResults = null;
-            try {
-                tmdbSearchResults = NetworkUtils.getResponseFromHttpUrl(searchUrl);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return tmdbSearchResults;
-        }
-
-        @Override
-        protected void onPostExecute(String tmdbSearchResults) {
-            // As soon as the loading is complete, hide the loading indicator
-            mLoadingIndicator.setVisibility(View.INVISIBLE);
-            if (tmdbSearchResults != null && !tmdbSearchResults.equals("")) {
-                /**
-                 * Call showJsonDataView, parse the JSON and populate the RecyclerView if we have
-                 * valid, non-null results
-                 */
-                showTrailersList();
-                trailers = JsonUtils.parseTrailerJson(tmdbSearchResults);
-                ((TrailerAdapter) mAdapterTrailers).setTrailers(trailers);
-            } else {
-                // Call showErrorMessage if the result is null in onPostExecute
-                showErrorMessage(R.string.error_message_results);
-            }
-        }
-    }
-
-    private class tmdbQueryTaskReviews extends AsyncTask<URL, Void, String> {
-        // Override onPreExecute to set the loading indicator to visible
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mLoadingIndicator.setVisibility(View.VISIBLE);
-        }
-
-        @Override
-        protected String doInBackground(URL... params) {
-            URL searchUrl = params[0];
-            String tmdbSearchResults = null;
-            try {
-                tmdbSearchResults = NetworkUtils.getResponseFromHttpUrl(searchUrl);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return tmdbSearchResults;
-        }
-
-        @Override
-        protected void onPostExecute(String tmdbSearchResults) {
-            // As soon as the loading is complete, hide the loading indicator
-            mLoadingIndicator.setVisibility(View.INVISIBLE);
-            if (tmdbSearchResults != null && !tmdbSearchResults.equals("")) {
-                /**
-                 * Call showJsonDataView, parse the JSON and populate the RecyclerView if we have
-                 * valid, non-null results
-                 */
-                showReviewsList();
-                reviews = JsonUtils.parseReviewJson(tmdbSearchResults);
-                ((ReviewAdapter) mAdapterReviews).setReviews(reviews);
-            } else {
-                // Call showErrorMessage if the result is null in onPostExecute
-                showErrorMessage(R.string.error_message_results);
-            }
         }
     }
 
