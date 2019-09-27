@@ -1,4 +1,4 @@
-package com.example.popularmovies.database;
+package com.example.popularmovies.data.database;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;

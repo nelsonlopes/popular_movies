@@ -1,4 +1,4 @@
-package com.example.popularmovies.network;
+package com.example.popularmovies.data.network;
 
 import android.content.Context;
 import android.net.ConnectivityManager;

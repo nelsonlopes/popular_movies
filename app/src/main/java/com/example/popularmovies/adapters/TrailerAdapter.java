@@ -58,23 +58,6 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.MyViewHo
     public void onBindViewHolder(final TrailerAdapter.MyViewHolder holder, int position) {
         // - get element from the dataset at this position
         // - replace the contents of the view with that
-
-        /*holder.textView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Trailer trailer = getItem(holder.getAdapterPosition());
-
-                Intent appIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(YOUTUBE_APP_BASE_URI +
-                        trailer.getKey()));
-                Intent webIntent = new Intent(Intent.ACTION_VIEW,
-                        Uri.parse(YOUTUBE_WEB_BASE_URL + trailer.getKey()));
-                try {
-                    mContext.startActivity(appIntent);
-                } catch (ActivityNotFoundException ex) {
-                    mContext.startActivity(webIntent);
-                }
-            }
-        });*/
         TextView trailerNameTv = holder.view.findViewById(R.id.tv_trailer_name);
         Button playBtn = holder.view.findViewById(R.id.btn_play);
 
@@ -95,8 +78,6 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.MyViewHo
                 }
             }
         });
-
-        //holder.textView.setText(trailers.get(position).getName());
     }
 
     // Return the size of the dataset (invoked by the layout manager)

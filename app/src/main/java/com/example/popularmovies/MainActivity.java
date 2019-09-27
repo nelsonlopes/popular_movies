@@ -6,12 +6,12 @@ import android.content.SharedPreferences;
 import android.example.popularmovies_stage1.R;
 
 import com.example.popularmovies.adapters.MovieAdapter;
-import com.example.popularmovies.database.AppDatabase;
-import com.example.popularmovies.database.MoviesViewModel;
+import com.example.popularmovies.data.database.MovieRoomDatabase;
+import com.example.popularmovies.data.database.MovieViewModel;
 import com.example.popularmovies.model.Movie;
 import com.example.popularmovies.model.Movies;
-import com.example.popularmovies.network.TmdbRestClient;
-import com.example.popularmovies.network.NetworkUtils;
+import com.example.popularmovies.data.network.TmdbRestClient;
+import com.example.popularmovies.data.network.NetworkUtils;
 
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
@@ -38,8 +38,7 @@ import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
-    // TODO rever sugestão da revisão de código da stage 1
-    private static final String LOG_TAG = AppDatabase.class.getSimpleName();
+    private static final String LOG_TAG = MovieRoomDatabase.class.getSimpleName();
 
     @BindView(R.id.rv_movies)
     RecyclerView recyclerView;
@@ -55,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager layoutManager;
 
     // TODO Use this variable in all the program?
-    public AppDatabase mDb;
+    public MovieRoomDatabase mDb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
          */
         ButterKnife.bind(this);
 
-        mDb = AppDatabase.getInstance(getApplicationContext());
+        mDb = MovieRoomDatabase.getDatabase(getApplicationContext());
 
         /**
          * If something goes wrong (like there is no internet connection), the usar taps the
@@ -127,7 +126,8 @@ public class MainActivity extends AppCompatActivity {
         if (sortMethod == getResources().getString(R.string.tmdb_sort_favorites)) {
             Log.d(LOG_TAG, "Actively retrieving the movies from the database");
             // Setup ViewModel
-            MoviesViewModel viewModel = ViewModelProviders.of(this).get(MoviesViewModel.class);
+            MovieViewModel viewModel = ViewModelProviders.of(this)
+                    .get(MovieViewModel.class);
             viewModel.getMovies().observe(this, new Observer<List<Movie>>() {
                 @Override
                 public void onChanged(@Nullable List<Movie> movies_) {

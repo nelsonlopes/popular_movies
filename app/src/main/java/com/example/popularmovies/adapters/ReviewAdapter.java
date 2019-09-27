@@ -1,19 +1,14 @@
 package com.example.popularmovies.adapters;
 
-import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.Intent;
 import android.example.popularmovies_stage1.R;
-import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.popularmovies.model.Review;
-import com.example.popularmovies.model.Trailer;
 
 import java.util.List;
 
@@ -57,9 +52,6 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.MyViewHold
     public void onBindViewHolder(final ReviewAdapter.MyViewHolder holder, int position) {
         // - get element from the dataset at this position
         // - replace the contents of the view with that
-
-        //holder.textView.setText(reviews.get(position).getContent());
-
         TextView reviewAuthorTv = holder.view.findViewById(R.id.tv_review_author);
         TextView reviewContentTv = holder.view.findViewById(R.id.tv_review_content);
 

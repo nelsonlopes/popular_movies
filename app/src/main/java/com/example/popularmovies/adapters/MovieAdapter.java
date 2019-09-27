@@ -11,8 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.example.popularmovies.network.NetworkUtils;
-import com.example.popularmovies.network.TmdbRestClient;
+import com.example.popularmovies.data.network.TmdbRestClient;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;

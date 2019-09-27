@@ -1,4 +1,4 @@
-package com.example.popularmovies.network;
+package com.example.popularmovies.data.network;
 
 import android.example.popularmovies_stage1.BuildConfig;
 

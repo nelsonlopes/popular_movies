@@ -1,11 +1,13 @@
 package com.example.popularmovies;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.example.popularmovies_stage1.R;
 
 import com.example.popularmovies.adapters.ReviewAdapter;
 import com.example.popularmovies.adapters.TrailerAdapter;
-import com.example.popularmovies.database.AppDatabase;
+import com.example.popularmovies.data.database.MovieRoomDatabase;
+import com.example.popularmovies.data.database.MovieViewModel;
 import com.example.popularmovies.model.Movie;
 
 import android.os.Parcelable;
@@ -25,8 +27,8 @@ import com.example.popularmovies.model.Review;
 import com.example.popularmovies.model.Reviews;
 import com.example.popularmovies.model.Trailer;
 import com.example.popularmovies.model.Trailers;
-import com.example.popularmovies.network.TmdbRestClient;
-import com.example.popularmovies.network.NetworkUtils;
+import com.example.popularmovies.data.network.TmdbRestClient;
+import com.example.popularmovies.data.network.NetworkUtils;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -73,7 +75,7 @@ public class DetailsActivity extends AppCompatActivity { ;
     private RecyclerView.Adapter mAdapterReviews;
     private RecyclerView.LayoutManager layoutManagerReviews;
 
-    public AppDatabase mDb;
+    public MovieRoomDatabase mDb;
 
     // TODO the list of favorites can be empty. Add some information to the user
 
@@ -87,7 +89,7 @@ public class DetailsActivity extends AppCompatActivity { ;
           */
         ButterKnife.bind(this);
 
-        mDb = AppDatabase.getInstance(getApplicationContext());
+        mDb = MovieRoomDatabase.getDatabase(getApplicationContext());
 
         Intent intent = getIntent();
         if (intent == null) {
@@ -179,58 +181,24 @@ public class DetailsActivity extends AppCompatActivity { ;
     }
 
     public void isFavorite() {
-        AppExecutors.getInstance().diskIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                if (mDb.movieDao().getMovieById(movie.getId()) != null) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            btnFavorite.setBackgroundResource(R.drawable.ic_favorite_24px);
-                        }
-                    });
-                } else {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            btnFavorite.setBackgroundResource(R.drawable.ic_favorite_border_24px);
-                        }
-                    });
-                }
-            }
-        });
+        MovieViewModel viewModel = ViewModelProviders.of(this).get(MovieViewModel.class);
+        if (viewModel.isFavorite(movie.getId())){
+            btnFavorite.setBackgroundResource(R.drawable.ic_favorite_24px);
+        } else {
+            btnFavorite.setBackgroundResource(R.drawable.ic_favorite_border_24px);
+        }
     }
 
     @OnClick(R.id.btnFavorite)
     public void setFavorite(View view) {
-        AppExecutors.getInstance().diskIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                /**
-                 * Should this logic be inside the Runnable, or outside with one Runnable inside
-                 * if condition is met (for the deletion), and another Runnable if it is'nt
-                 * (for the insert)?
-                 */
-                if (mDb.movieDao().getMovieById(movie.getId()) != null) {
-                    mDb.movieDao().deleteMovie(movie);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(getApplicationContext(), "Removed from favorites.", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-
-                } else {
-                    mDb.movieDao().insertMovie(movie);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(getApplicationContext(), "Added to favorites.", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-            }
-        });
+        MovieViewModel viewModel = ViewModelProviders.of(this).get(MovieViewModel.class);
+        if (viewModel.isFavorite(movie.getId())) {
+            viewModel.delete(movie);
+            Toast.makeText(getApplicationContext(), "Removed from favorites.", Toast.LENGTH_SHORT).show();
+        } else {
+            viewModel.insert(movie);
+            Toast.makeText(getApplicationContext(), "Added to favorites.", Toast.LENGTH_SHORT).show();
+        }
         isFavorite();
     }
 
