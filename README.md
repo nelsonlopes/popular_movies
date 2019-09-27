@@ -9,12 +9,12 @@ Then, add your API key in the file gradle.properties as follows: api_key="your_a
 - Sort the list of movies by popular, top rated or favorites
 - Favorites are defined by the user, and the data is persisted locally (so it can be accessed offline)
 - Movie details shows:
--- Backdrop image
--- Release date
--- User rating
--- Plot synopsis
--- List of trailers 
--- List of reviews
+  - Backdrop image
+  - Release date
+  - User rating
+  - Plot synopsis
+  - List of trailers 
+  - List of reviews
 - Click on a trailer opens the video in Youtube app, if installed, or in browser 
 - Support for orientation change
 
