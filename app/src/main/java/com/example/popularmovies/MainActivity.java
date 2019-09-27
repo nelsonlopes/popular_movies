@@ -7,7 +7,7 @@ import android.example.popularmovies_stage1.R;
 
 import com.example.popularmovies.adapters.MovieAdapter;
 import com.example.popularmovies.database.AppDatabase;
-import com.example.popularmovies.database.MainViewModel;
+import com.example.popularmovies.database.MoviesViewModel;
 import com.example.popularmovies.model.Movie;
 import com.example.popularmovies.utils.JsonUtils;
 import com.example.popularmovies.utils.NetworkUtils;
@@ -125,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
         if (sortMethod == getResources().getString(R.string.tmdb_sort_favorites)) {
             Log.d(LOG_TAG, "Actively retrieving the movies from the database");
             // Setup ViewModel
-            MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+            MoviesViewModel viewModel = ViewModelProviders.of(this).get(MoviesViewModel.class);
             viewModel.getMovies().observe(this, new Observer<List<Movie>>() {
                 @Override
                 public void onChanged(@Nullable List<Movie> movies_) {

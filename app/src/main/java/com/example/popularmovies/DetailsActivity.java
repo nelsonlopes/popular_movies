@@ -26,6 +26,8 @@ import com.example.popularmovies.model.Review;
 import com.example.popularmovies.model.Trailer;
 import com.example.popularmovies.utils.JsonUtils;
 import com.example.popularmovies.utils.NetworkUtils;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
@@ -211,10 +213,21 @@ public class DetailsActivity extends AppCompatActivity { ;
                  */
                 if (mDb.movieDao().getMovieById(movie.getId()) != null) {
                     mDb.movieDao().deleteMovie(movie);
-                    Toast.makeText(getApplicationContext(), "Removed from favorites.", Toast.LENGTH_SHORT).show();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getApplicationContext(), "Removed from favorites.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
                 } else {
                     mDb.movieDao().insertMovie(movie);
-                    Toast.makeText(getApplicationContext(), "Added to favorites.", Toast.LENGTH_SHORT).show();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getApplicationContext(), "Added to favorites.", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
             }
         });

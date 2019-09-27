@@ -7,19 +7,28 @@ import android.arch.persistence.room.PrimaryKey;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.SerializedName;
+
 @Entity(tableName = "movies")
 public class Movie implements Parcelable {
+    @SerializedName("id")
     @PrimaryKey
     private int id;
+    @SerializedName("original_title")
     @ColumnInfo(name = "original_title")
     private String originalTitle;
+    @SerializedName("overview")
     private String overview;
+    @SerializedName("vote_average")
     @ColumnInfo(name = "vote_average")
     private Double voteAverage;
+    @SerializedName("release_date")
     @ColumnInfo(name = "release_date")
     private String releaseDate;
+    @SerializedName("poster_path")
     @ColumnInfo(name = "poster_path")
     private String posterPath;
+    @SerializedName("backdrop_path")
     @ColumnInfo(name = "backdrop_path")
     private String backdropPath;
 

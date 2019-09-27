@@ -6,23 +6,22 @@ package com.example.popularmovies.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Trailer implements Parcelable{
+    @SerializedName("id")
     private String id;
+    @SerializedName("key")
     private String key;
+    @SerializedName("name")
     private String name;
+    @SerializedName("site")
     private String site;
+    @SerializedName("type")
     private String type;
 
     public Trailer() {
     }
-
-    /*public Trailer(String id, String key, String name, String site, String type) {
-        this.id = id;
-        this.key = key;
-        this.name = name;
-        this.site = site;
-        this.type = type;
-    }*/
 
     private Trailer(Parcel in) {
         id = in.readString();

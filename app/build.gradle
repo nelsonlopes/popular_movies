@@ -64,5 +64,10 @@ dependencies {
     /**
      * Constraint Layout
      */
-    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2' // TODO
+
+    /**
+     * Gson
+     */
+    implementation 'com.google.code.gson:gson:2.8.5'
 }

@@ -3,21 +3,20 @@ package com.example.popularmovies.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Review implements Parcelable {
+    @SerializedName("id")
     private String id;
+    @SerializedName("author")
     private String author;
+    @SerializedName("content")
     private String content;
+    @SerializedName("url")
     private String url;
 
     public Review() {
     }
-
-    /*public Review(String id, String author, String content, String url) {
-        this.id = id;
-        this.author = author;
-        this.content = content;
-        this.url = url;
-    }*/
 
     private Review(Parcel in) {
         id = in.readString();

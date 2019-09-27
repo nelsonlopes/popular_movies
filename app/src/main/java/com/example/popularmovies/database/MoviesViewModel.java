@@ -10,13 +10,13 @@ import com.example.popularmovies.model.Movie;
 
 import java.util.List;
 
-public class MainViewModel extends AndroidViewModel {
+public class MoviesViewModel extends AndroidViewModel {
 
     // Constant for logging
-    private static final String LOG_TAG = MainViewModel.class.getSimpleName();
+    private static final String LOG_TAG = MoviesViewModel.class.getSimpleName();
     private LiveData<List<Movie>> movies;
 
-    public MainViewModel(@NonNull Application application) {
+    public MoviesViewModel(@NonNull Application application) {
         super(application);
         AppDatabase database = AppDatabase.getInstance(this.getApplication());
         Log.d(LOG_TAG, "Actively retrieving the movies from the database");
