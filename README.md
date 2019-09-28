@@ -22,6 +22,7 @@ Then, add your API key in the file gradle.properties as follows: api_key="your_a
 - Room
 - LiveData
 - ViewModel
+- Lifecycle
 - Repository (Although not part of the Android Architecture Components, it was added as a best practice)
 
 ## Other libraries and patterns
