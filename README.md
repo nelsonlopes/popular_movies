@@ -31,3 +31,4 @@ Then, add your API key in the file gradle.properties as follows: api_key="your_a
 - [RecyclerView](https://developer.android.com/reference/android/support/v7/widget/RecyclerView)
 - [Butter Knife](https://github.com/JakeWharton/butterknife)
 - [Picasso](https://github.com/square/picasso)
+- Parcelable
